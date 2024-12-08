@@ -1,15 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const connectDatabase = () => {
-    console.log("Wait connecting to the database");
+const connectDatabase = async () => {
+    try {
+        const uri = process.env.MONGODB_URI;
+        if (!uri) {
+            throw new Error("MONGODB_URI não definido");
+        }
 
-    mongoose
-        .connect(process.env.MONGODB_URI, {
+        await mongoose.connect(uri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-        })
-        .then(() => console.log("MongoDB Atlas conectado com sucesso"))
-        .catch((err) => console.log(err));
+        });
+        console.log("Banco de dados conectado com sucesso");
+    } catch (error) {
+        console.error("Erro ao conectar ao banco de dados:", error.message);
+        process.exit(1);
+    }
 };
 
 export default connectDatabase;
