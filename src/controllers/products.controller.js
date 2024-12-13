@@ -9,7 +9,6 @@ import {
 export const findAll = async (req, res) => {
     try {
         const products = await findAllService();
-
         res.status(200).send({ products: products });
     } catch (error) {
         res.status(500).send({ message: error.message });
@@ -17,18 +16,15 @@ export const findAll = async (req, res) => {
 };
 
 export const findById = async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).send("O id não é válido");
+
     try {
-        const { id } = req.params;
-
-        if (!id) {
-            return "O id não é válido";
-        }
-
         const product = await findByIdService(id);
-
         res.send(product);
     } catch (error) {
-        res.send({ error: error });
+        res.status(500).send({ error });
     }
 };
 
@@ -37,15 +33,15 @@ export const create = async (req, res) => {
         const { title, price } = req.body;
 
         if (!title || !price) {
-            res.status(400).send({
+            return res.status(400).send({
                 message: "Preencha todos os campos necessários",
             });
-            return;
         }
 
         await createService({ title, price });
 
-        res.status(200).send("Produto criado com sucesso");
+        // Enviar resposta como JSON
+        res.status(201).send({ message: "Produto criado com sucesso" });
     } catch (error) {
         res.status(500).send({ message: error.message });
     }
@@ -84,7 +80,7 @@ export const erease = async (req, res) => {
 
         const product = await findByIdService(id);
 
-        console.log(product)
+        console.log(product);
 
         await ereaseService(id);
 
